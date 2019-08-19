@@ -23,12 +23,26 @@ set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Shared libs not available")
 project(nx-cmake)
 
 # flags
-set(FLAGS -Wall)
+set(FLAGS -Wall -D_REENTRANT)
+
+# portlibs (libraries ported to switch in devkitpro)
+set(PORTLIBS_PREFIX "${DEVKITPRO}/portlibs/switch")
+set(PORTLIBS_LIBDIR "${PORTLIBS_PREFIX}/lib")
+
+# sdl2 specific
+set(SDL2_INCLUDE_DIRS "${PORTLIBS_PREFIX}/include/SDL2")
+
+# libnx
+set(LIBNX_PREFIX "${DEVKITPRO}/libnx")
+set(LIBNX_LIBDIR "${DEVKITPRO}/libnx/lib")
+
+set(CMAKE_FIND_ROOT_PATH ${DEVKITPRO} ${DEVKITPRO}/devkitA64 ${DEVKITPRO}/libnx ${PORTLIBS_PREFIX})
 
 add_executable(${CMAKE_PROJECT_NAME}.elf source/main.c)
-target_include_directories(${CMAKE_PROJECT_NAME}.elf PRIVATE source)
+target_include_directories(${CMAKE_PROJECT_NAME}.elf PRIVATE source ${SDL2_INCLUDE_DIRS})
 target_link_libraries(${CMAKE_PROJECT_NAME}.elf
-        ${DEVKITPRO}/libnx/lib/libnx.a)
+		-L${PORTLIBS_LIBDIR} -L${LIBNX_LIBDIR} SDL2 bz2 drm_nouveau EGL freetype glad z stdc++ drm_nouveaud glapi GLESv1_CM
+		GLESv2 minizip png SDL2main nx m)
 
 #####################
 # NX (SWITCH) target
