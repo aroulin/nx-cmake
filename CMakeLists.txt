@@ -28,7 +28,6 @@ set(FLAGS -Wall)
 add_executable(${CMAKE_PROJECT_NAME}.elf source/main.c)
 target_include_directories(${CMAKE_PROJECT_NAME}.elf PRIVATE source)
 target_link_libraries(${CMAKE_PROJECT_NAME}.elf
-        ${DEVKITPRO}/portlibs/switch/lib/libnxlink_print.a
         ${DEVKITPRO}/libnx/lib/libnx.a)
 
 #####################

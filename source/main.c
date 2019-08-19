@@ -1,43 +1,31 @@
 #include <string.h>
 #include <stdio.h>
+
 #include <switch.h>
-#include <nxlink_print.h>
 
-//#define EMU 1
-#define SCREEN_WIDTH    1280
-#define SCREEN_HEIGHT   720
+int main(int argc, char **argv)
+{
+    //Initialize console. Using NULL as the second argument tells the console library to use the internal console structure as current one.
+    consoleInit(NULL);
 
-int main(int argc, char **argv) {
+    //Move the cursor to row 16 and column 20 and then prints "Hello World!"
+    //To move the cursor you have to print "\x1b[r;cH", where r and c are respectively
+    //the row and column where you want your cursor to move
+    printf("\x1b[16;20HHello World!");
 
-    gfxInitDefault();
-    gfxSetMode(GfxMode_TiledDouble);
-
-#ifdef EMU
-    consoleDebugInit(debugDevice_SVC);
-    stdout = stderr; // for yuzu
-#else
-    nxlink_print_init();
-#endif
-
-    printf("main loop\n");
-
-    while (appletMainLoop()) {
-
+    while(appletMainLoop())
+    {
+        //Scan all the inputs. This should be done once for each frame
         hidScanInput();
-        u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
-        if (kDown & KEY_PLUS) {
-            break;
-        }
 
-        gfxFlushBuffers();
-        gfxSwapBuffers();
-        gfxWaitForVsync();
+        //hidKeysDown returns information about which buttons have been just pressed (and they weren't in the previous frame)
+        u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+
+        if (kDown & KEY_PLUS) break; // break in order to return to hbmenu
+
+        consoleUpdate(NULL);
     }
 
-    gfxExit();
-#ifndef EMU
-    nxlink_print_exit();
-#endif
-
+    consoleExit(NULL);
     return 0;
 }
